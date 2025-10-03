@@ -1,9 +1,20 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { useAuth } from "react-oidc-context";
+import { getExpenses } from "@/api";
 
 export default function Home() {
   const auth = useAuth();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const expenses = await getExpenses();
+      console.log(expenses);
+    };
+    fetchData();
+  }, []);
 
   const signOutRedirect = () => {
     const clientId = process.env.NEXT_PUBLIC_AWS_COGNITO_CLIENT_ID || "";
