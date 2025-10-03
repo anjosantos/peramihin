@@ -4,18 +4,22 @@ const tableName = process.env.tableName || "ExpensesTable";
 
 export const postExpense = async (event) => {
   const { body } = event;
-  const { expenseId, totalAmount, date } = JSON.parse(body || "{}");
+  const { totalAmount, date } = JSON.parse(body || "{}");
 
-  if (!expenseId || !totalAmount || !date) {
+  if (!totalAmount || !date) {
     return createResponse(409, {
       error:
-        "Missing required attributes for the item: expenseId, totalAmount, or date.",
+        "Missing required attributes for the item: totalAmount or date.",
     });
   }
+
+  const userId = event.requestContext.authorizer.jwt.claims.sub;
+  const expenseId = crypto.randomUUID();
 
   const command = new PutCommand({
     TableName: tableName,
     Item: {
+      userId,
       expenseId,
       totalAmount,
       date,

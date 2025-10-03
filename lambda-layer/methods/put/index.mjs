@@ -19,12 +19,14 @@ export const updateExpense = async (event) => {
   let updateExpression = `SET  ${
     totalAmount ? "totalAmount = :totalAmount, " : ""
   }${date ? "#dt = :newDate, " : ""}`.slice(0, -2);
+  const userId = event.requestContext.authorizer.jwt.claims.sub;
 
   try {
     const command = new UpdateCommand({
       TableName: tableName,
       Key: {
         expenseId,
+        userId,
       },
       UpdateExpression: updateExpression,
       ExpressionAttributeNames: {

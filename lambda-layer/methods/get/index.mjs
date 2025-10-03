@@ -1,7 +1,7 @@
 import {
   docClient,
   GetCommand,
-  ScanCommand,
+  QueryCommand,
   createResponse,
 } from "/opt/nodejs/utils.mjs";
 
@@ -11,18 +11,25 @@ export const getExpense = async (event) => {
   const { pathParameters } = event;
   const { id } = pathParameters || {};
 
+  const userId = event.requestContext.authorizer.jwt.claims.sub;
+
   try {
     let command;
     if (id) {
       command = new GetCommand({
         TableName: tableName,
         Key: {
+          userId,
           expenseId: id,
         },
       });
     } else {
-      command = new ScanCommand({
+      command = new QueryCommand({
         TableName: tableName,
+        KeyConditionExpression: "userId = :uid",
+        ExpressionAttributeValues: {
+          ":uid": userId,
+        },
       });
     }
     const response = await docClient.send(command);

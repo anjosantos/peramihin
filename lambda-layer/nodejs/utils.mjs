@@ -6,6 +6,7 @@ import {
   PutCommand,
   UpdateCommand,
   DeleteCommand,
+  QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({});
@@ -27,4 +28,5 @@ export {
   PutCommand,
   UpdateCommand,
   DeleteCommand,
+  QueryCommand,
 };

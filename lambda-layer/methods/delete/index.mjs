@@ -11,14 +11,18 @@ export const deleteExpense = async (event) => {
   const expenseId = pathParameters?.id;
   if (!expenseId) return createResponse(400, { error: "Missing expenseId" });
 
+  const userId = event.requestContext.authorizer.jwt.claims.sub;
+
   try {
     const command = new DeleteCommand({
       TableName: tableName,
       Key: {
+        userId,
         expenseId,
       },
       ReturnValues: "ALL_OLD", // returns deleted value as response
-      ConditionExpression: "attribute_exists(expenseId)", // ensures the item exists before deleting
+      ConditionExpression:
+        "attribute_exists(userId) AND attribute_exists(expenseId)", // ensures the item exists before deleting
     });
 
     const response = await docClient.send(command);
