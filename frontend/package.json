@@ -9,6 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@types/chart.js": "^2.9.41",
+    "@types/d3": "^7.4.3",
+    "chart.js": "^4.5.0",
+    "d3": "^7.9.0",
     "next": "15.5.4",
     "oidc-client-ts": "^3.3.0",
     "react": "19.1.0",

@@ -92,6 +92,7 @@ export const handler = async (event) => {
         subtotal: extracted.subtotal,
         taxes: extracted.taxes,
         items: extracted.items,
+        fileUrl: key,
       },
     });
 
