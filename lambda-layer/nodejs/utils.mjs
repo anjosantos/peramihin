@@ -13,10 +13,15 @@ import {
   TextractClient,
   AnalyzeExpenseCommand,
 } from "@aws-sdk/client-textract";
+import { S3Client } from "@aws-sdk/client-s3";
 
-const client = new DynamoDBClient({});
+const client = new DynamoDBClient({ region: "us-east-2" });
 const docClient = DynamoDBDocumentClient.from(client);
-const textractClient = new TextractClient();
+const textractClient = new TextractClient({
+  region: "us-east-2",
+});
+
+const s3Client = new S3Client({ region: "us-east-2" });
 
 const createResponse = (statusCode, body) => {
   return {
@@ -38,4 +43,5 @@ export {
   parse,
   AnalyzeExpenseCommand,
   textractClient,
+  s3Client,
 };

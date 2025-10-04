@@ -1,7 +1,6 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { parse } from "/opt/nodejs/utils.mjs";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { s3Client, parse } from "/opt/nodejs/utils.mjs";
 
-const s3 = new S3Client({ region: process.env.AWS_REGION });
 const bucketName = process.env.BUCKET_NAME;
 
 export const handler = async (event) => {
@@ -30,9 +29,11 @@ export const handler = async (event) => {
       const contentType = file.contentType || "application/octet-stream";
       const fileName = file.filename || "uploaded-file";
 
-      const key = `${userId}/${expenseId}`;
+      // Preserve extension if present
+      const ext = fileName.includes(".") ? fileName.split(".").pop() : "";
+      const key = ext ? `${userId}/${expenseId}.${ext}` : `${userId}/${expenseId}`;
 
-      await s3.send(
+      await s3Client.send(
         new PutObjectCommand({
           Bucket: bucketName,
           Key: key,

@@ -24,10 +24,10 @@ export const handler = async (event) => {
     );
 
     let extracted = {
-      date: null,
-      subtotal: null,
+      date: "",
+      subtotal: 0,
       taxes: {},
-      total: null,
+      total: 0,
       items: [],
     };
 
@@ -38,13 +38,17 @@ export const handler = async (event) => {
         const value = field.ValueDetection?.Text;
 
         if (type?.includes("DATE")) extracted.date = value;
-        if (type?.includes("SUBTOTAL")) extracted.subtotal = value;
-        if (type?.includes("TOTAL")) extracted.total = value;
+        if (type?.includes("SUBTOTAL"))
+          extracted.subtotal =
+            parseFloat(value?.replace(/[^0-9.-]/g, "")) || null;
+        if (type?.includes("TOTAL"))
+          extracted.total = parseFloat(value?.replace(/[^0-9.-]/g, "")) || null;
 
         // Detect tax fields (e.g. GST, PST, VAT, TAX)
         if (type?.includes("TAX")) {
           const label = field.LabelDetection?.Text || "TAX";
-          extracted.taxes[label] = value;
+          extracted.taxes[label] =
+            parseFloat(value?.replace(/[^0-9.-]/g, "")) || null;
         }
       }
 
@@ -57,9 +61,15 @@ export const handler = async (event) => {
             const fieldValue = field.ValueDetection?.Text;
 
             if (fieldType?.includes("ITEM")) itemData.name = fieldValue;
-            if (fieldType?.includes("QUANTITY")) itemData.quantity = fieldValue;
-            if (fieldType?.includes("PRICE")) itemData.price = fieldValue;
-            if (fieldType?.includes("AMOUNT")) itemData.total = fieldValue;
+            if (fieldType?.includes("QUANTITY"))
+              itemData.quantity =
+                parseFloat(fieldValue?.replace(/[^0-9.-]/g, "")) || null;
+            if (fieldType?.includes("PRICE"))
+              itemData.price =
+                parseFloat(fieldValue?.replace(/[^0-9.-]/g, "")) || null;
+            if (fieldType?.includes("AMOUNT"))
+              itemData.total =
+                parseFloat(fieldValue?.replace(/[^0-9.-]/g, "")) || null;
           }
           extracted.items.push(itemData);
         }
@@ -68,7 +78,8 @@ export const handler = async (event) => {
 
     console.log("Extracted Receipt Data:", JSON.stringify(extracted, null, 2));
 
-    const [userId, expenseId] = key.split("/");
+    const [userId, expenseFileName] = key.split("/");
+    const [expenseId, _] = expenseFileName.split(".");
 
     console.log(`User Id: ${userId}. Expense Id: ${expenseId}`);
     const command = new PutCommand({
@@ -79,6 +90,8 @@ export const handler = async (event) => {
         totalAmount: extracted.total,
         date: extracted.date,
         subtotal: extracted.subtotal,
+        taxes: extracted.taxes,
+        items: extracted.items,
       },
     });
 
@@ -86,7 +99,10 @@ export const handler = async (event) => {
     try {
       console.log("Sending command to DynamoDB...");
       const responsePostExpense = await docClient.send(command);
-      console.log("Response Post Expense:", JSON.stringify(responsePostExpense, null, 2));
+      console.log(
+        "Response Post Expense:",
+        JSON.stringify(responsePostExpense, null, 2)
+      );
     } catch (err) {
       console.error("DynamoDB Error:", err);
       if (err.message === "The conditional request failed")
