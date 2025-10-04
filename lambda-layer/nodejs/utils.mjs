@@ -8,9 +8,15 @@ import {
   DeleteCommand,
   QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
+import { parse } from "lambda-multipart-parser";
+import {
+  TextractClient,
+  AnalyzeExpenseCommand,
+} from "@aws-sdk/client-textract";
 
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
+const textractClient = new TextractClient();
 
 const createResponse = (statusCode, body) => {
   return {
@@ -29,4 +35,7 @@ export {
   UpdateCommand,
   DeleteCommand,
   QueryCommand,
+  parse,
+  AnalyzeExpenseCommand,
+  textractClient,
 };

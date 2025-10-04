@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+/lambda-layer/nodejs/node_modules
 /.pnp
 .pnp.*
 .yarn/*

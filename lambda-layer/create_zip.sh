@@ -19,6 +19,18 @@ zip -r put.zip index.mjs
 mv put.zip ../../
 cd ../..
 
+echo "Creating zip for Upload POST Function"
+cd methods/upload
+zip -r upload.zip index.mjs
+mv upload.zip ../../
+cd ../..
+
+echo "Creating zip for Textract Function"
+cd methods/processImage
+zip -r processImage.zip index.mjs
+mv processImage.zip ../../
+cd ../..
+
 echo "Creating zip for DELETE Function"
 cd methods/delete
 zip -r delete.zip index.mjs

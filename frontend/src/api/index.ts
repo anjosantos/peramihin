@@ -78,3 +78,16 @@ export const deleteExpense = async (id: string) => {
   });
   return response.json();
 };
+
+export const uploadImage = async (file: File) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  const response = await fetch(`${API_BASE_URL}/expenses/upload`, {
+    method: "POST",
+    body: formData,
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  });
+  return response.json();
+};
